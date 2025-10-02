@@ -2,11 +2,11 @@
 
 extern crate alloc;
 
-use alloc::{string::String, vec, vec::Vec};
+use alloc::{string::{String, ToString}, vec, vec::Vec};
 
 use stylus_sdk::{
     abi as stylus_abi,
-    alloy_primitives::{aliases::B256, Address},
+    alloy_primitives::{aliases::B256, Address, U256},
     prelude::*,
     storage::{StorageAddress, StorageU256},
 };
@@ -22,11 +22,11 @@ use openzeppelin_stylus::{
 #[entrypoint]
 #[storage]
 pub struct Storage {
-    ownable: Ownable,
-    uups: UUPSUpgradeable,
     pub fee_collector: StorageAddress,
     pub token: StorageAddress,
-    pub fees_collected: StorageU256,
+    pub fee_amount: StorageU256,
+    ownable: Ownable,
+    uups: UUPSUpgradeable,
 }
 
 #[public]
@@ -34,18 +34,22 @@ pub struct Storage {
 impl Storage {
     pub fn init(
         &mut self,
-        implementation: Address,
         owner: Address,
         fee_collector: Address,
         token: Address,
+        fee_amount: U256
     ) -> Result<(), Vec<u8>> {
         self.uups.set_version()?;
+        self.uups.constructor();
         self.ownable.constructor(owner)?;
         self.fee_collector.set(fee_collector);
         self.token.set(token);
-        self.uups
-            .upgrade_to_and_call(implementation, stylus_abi::Bytes(vec![]))?;
+        self.fee_amount.set(fee_amount);
         Ok(())
+    }
+
+    pub fn hello() -> String {
+        "Hello!".to_string()
     }
 }
 
