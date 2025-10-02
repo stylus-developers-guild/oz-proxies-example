@@ -24,6 +24,7 @@ use openzeppelin_stylus::{
 pub struct Storage {
     pub fee_collector: StorageAddress,
     pub token: StorageAddress,
+    pub collected: StorageU256,
     pub fee_amount: StorageU256,
     ownable: Ownable,
     uups: UUPSUpgradeable,
@@ -50,6 +51,10 @@ impl Storage {
 
     pub fn hello() -> String {
         "Hello!".to_string()
+    }
+
+    pub fn collect(&mut self) -> Result<U256, Vec<u8>> {
+        todo!()
     }
 }
 

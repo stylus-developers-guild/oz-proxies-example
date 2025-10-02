@@ -19,6 +19,7 @@ interface IERC20 {
 contract Proxy {
     address private feeCollector;
     IERC20 private token;
+    uint256 private collected;
     uint256 private feeAmount;
 
     event TollPaid(
@@ -55,6 +56,7 @@ contract Proxy {
         }
         require(token.transferFrom(msg.sender, address(this), feeAmount));
         emit TollPaid(msg.sender, feeAmount);
+        collected += feeAmount;
         (bool success, bytes memory rd) = impl.delegatecall(msg.data);
         if (!success) {
             assembly {
