@@ -3,3 +3,5 @@ target
 oz-proxies.wasm
 out
 cache
+oz-proxies2.wasm
+oz-proxies.wat

@@ -38,7 +38,7 @@ contract Proxy {
         assembly {
             sstore(slot, _impl)
         }
-        (bool success,) = _impl.delegatecall(abi.encodePacked(
+        (bool success,) = _impl.delegatecall(abi.encodeWithSelector(
             IImpl.init.selector,
             _owner,
             _feeCollector,
@@ -57,10 +57,17 @@ contract Proxy {
         require(token.transferFrom(msg.sender, address(this), feeAmount));
         emit TollPaid(msg.sender, feeAmount);
         collected += feeAmount;
-        (bool success, bytes memory rd) = impl.delegatecall(msg.data);
-        if (!success) {
+        (bool success, bytes memory data) = impl.delegatecall(msg.data);
+        if (data.length > 0 && !success) {
             assembly {
-                revert(add(rd, 32), mload(rd))
+                revert(add(data, 0x20), mload(data))
+            }
+        } else {
+            require(success);
+            if (data.length > 0) {
+                assembly {
+                    return(add(data, 0x20), mload(data))
+                }
             }
         }
     }

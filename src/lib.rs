@@ -41,7 +41,6 @@ impl Storage {
         fee_amount: U256
     ) -> Result<(), Vec<u8>> {
         self.uups.set_version()?;
-        self.uups.constructor();
         self.ownable.constructor(owner)?;
         self.fee_collector.set(fee_collector);
         self.token.set(token);
@@ -51,10 +50,6 @@ impl Storage {
 
     pub fn hello() -> String {
         "Hello!".to_string()
-    }
-
-    pub fn collect(&mut self) -> Result<U256, Vec<u8>> {
-        todo!()
     }
 }
 
